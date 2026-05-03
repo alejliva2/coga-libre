@@ -116,7 +116,7 @@ void shaderSetVec3(Shader shader, const char *name, glm::vec3 value)
 }
 
 // ENVIAR UN MAT4 AL SHADER
-void shaderSetVec3(Shader shader, const char *name, glm::mat4 value)
+void shaderSetMat4(Shader shader, const char *name, glm::mat4 value)
 {
     glUniformMatrix4fv(glGetUniformLocation(shader.programID, name), 1, GL_FALSE, glm::value_ptr(value));
 }
