@@ -8,6 +8,10 @@
 
 #include "constants.h"
 #include "shader.h"
+#include "camera.h"
+#include "character.h"
+#include "scene.h"
+#include "textures.h"
 
 // Declaración externa de la función de carga de los shaders
 // Esta es la función que usábamos antes
@@ -62,7 +66,8 @@ int main()
     // =========================
     // 2. Crear ventana
     // =========================
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Sistema Solar", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Proyecto Libre", NULL, NULL);
+
     if (window == nullptr)
     {
         std::cerr << "Error: no se pudo crear la ventana GLFW\n";
@@ -107,6 +112,14 @@ int main()
     // =========================
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    initCamera(cam, glm::vec3(0.0f, HEIGHT_EYE, 0.0f)); 
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Ocultar el cursor
+
+    initRoom(room, phong.programID);
+
+    float lastFrameTime = 0.0f;
+
     // =========================
     // 7. Loop principal
     // =========================
@@ -123,8 +136,23 @@ int main()
         glfwGetFramebufferSize(window, &width, &height);
         float aspectRatio = (height > 0) ? (float)width / (float)height : 1.0f;
 
+        float currentTime = glfwGetTime();
+        float deltaTime = currentTime - lastFrameTime;
+        lastFrameTime = currentTime;
+
+        processKeyboard(cam, window, deltaTime);
+
+        glm::mat4 view = getViewMatrix(cam);
+        glm::mat4 projection = getProjectionMatrix(cam, aspectRatio);
+
+
         // Activar los shaders
         useShader(phong);
+        shaderSetMat4(phong, "view", view);
+        shaderSetMat4(phong, "projection", projection);
+        shaderSetFloat(phong, "slAmbient", 0.2f);
+
+        drawRoom(room, phong);
 
         // Intercambiar buffers y procesar eventos
         glfwSwapBuffers(window);
