@@ -3,17 +3,16 @@
 #include <glm/glm.hpp>
 #include <stb_image.h>
 
-#include "objects.h"
-#include "character.h"
-#include "esfera.h"
+#include "scene.h"
 
 // Configura la geometría OpenGL de la articulación esférica
 // El formato de cada vértice en vertices_esfera es:
 // - normal (3 floats)
 // - coordenada de textura (2 floats)
 // - posición (3 floats)
-void configSphere(Body &object) {
-    glGenVertexArrays(1, &object.VAO);
+/*
+void configSphere(Something &something) {
+    glGenVertexArrays(1, &something.VAO);
     glGenBuffers(1, &object.VBO);
 
     glBindVertexArray(object.VAO);
@@ -34,3 +33,4 @@ void configSphere(Body &object) {
 
     glBindVertexArray(0);
 }
+*/

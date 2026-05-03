@@ -12,8 +12,6 @@ typedef struct
     unsigned int VBO;
     unsigned int vertexCount;
     GLuint textureID;
-} Body;
-
-
+} BodyPart;
 
 #endif // CHARACTER_H
