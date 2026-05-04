@@ -1,9 +1,9 @@
-// Hacemos una función para cargar texturas, como se recomendó en clase
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
 
 #include "bibliotecascurso/stb_image.h"
+
 #include "textures.h"
 
 // =========================
@@ -51,8 +51,13 @@ GLuint loadTexture(const char* path)
     else if (channels == 3)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     else
+    {
         std::cerr << "Formato de imagen no soportado: " << channels << " canales.\n";
-    
+        stbi_image_free(data);
+        glDeleteTextures(1, &id);
+        return 0;
+    }
+
     // 5. Configurar filtros y wrapping
     // - WRAP_S y WRAP_T controlan qué pasa si las UV salen del rango [0, 1]
     // - GL_REPEAT repite la textura

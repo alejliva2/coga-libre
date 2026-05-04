@@ -1,15 +1,14 @@
 #include <glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <stb_image.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "scene.h"
 #include "constants.h"
 #include "esfera.h"
-#include "textures.h"
+#include "scene.h"
 #include "shader.h"
+#include "textures.h"
 
 // =========================
 // VARIABLES GLOBALES
