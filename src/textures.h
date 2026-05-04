@@ -1,10 +1,10 @@
 #ifndef TEXTURES_H
 #define TEXTURES_H
 
-#include <GLFW/glfw3.h>
+#include <glad.h>
 
 // =========================
-// TEXTURA
+// TEXTURAS
 // =========================
 GLuint loadTexture(const char* path);
 

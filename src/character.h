@@ -1,6 +1,10 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include <glad.h>
+
+#include <glm/glm.hpp>
+
 typedef struct
 {
     glm::vec3 position;

@@ -1,8 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "shader.h"
 #include "character.h"
+#include "shader.h"
 
 
 typedef struct

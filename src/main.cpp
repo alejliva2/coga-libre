@@ -6,11 +6,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "constants.h"
-#include "shader.h"
 #include "camera.h"
 #include "character.h"
+#include "constants.h"
+#include "input.h"
 #include "scene.h"
+#include "shader.h"
 #include "textures.h"
 
 // Declaración externa de la función de carga de los shaders
@@ -104,21 +105,23 @@ int main()
     // =========================
     // 5. Definiciones
     // =========================
+    // Definir e inicializar shaders
     Shader phong = createShader("shaders/phong.vert", "shaders/phong.frag");
     Shader unlit = createShader("shaders/unlit.vert", "shaders/unlit.frag");
+
+    // Definir e inicializar tiempo, cámara y habitación
+    TimeData time;
+    Camera camera;
+    Room room;
+    initTime(time);
+    initCamera(camera, glm::vec3(0.0f, HEIGHT_EYE, 0.0f));
+    initRoom(room, phong.programID);
 
     // =========================
     // 6. Callbacks
     // =========================
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    initCamera(cam, glm::vec3(0.0f, HEIGHT_EYE, 0.0f)); 
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Ocultar el cursor
-
-    initRoom(room, phong.programID);
-
-    float lastFrameTime = 0.0f;
+    registerInputCallbacks(window, &time, &camera);
 
     // =========================
     // 7. Loop principal
@@ -131,20 +134,15 @@ int main()
         // Limpieza de profundidad
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Ajustar reescalado y leer aspectRatio
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        float aspectRatio = (height > 0) ? (float)width / (float)height : 1.0f;
+        // Calcular el aspectRatio
+        float aspectRatio = (float)SCR_WIDTH / (float)SCR_HEIGHT;
 
-        float currentTime = glfwGetTime();
-        float deltaTime = currentTime - lastFrameTime;
-        lastFrameTime = currentTime;
+        // Procesar el input
+        processInput(window);
 
-        processKeyboard(cam, window, deltaTime);
-
-        glm::mat4 view = getViewMatrix(cam);
-        glm::mat4 projection = getProjectionMatrix(cam, aspectRatio);
-
+        // Matrices de vista y proyección
+        glm::mat4 view = getViewMatrix(camera);
+        glm::mat4 projection = getProjectionMatrix(camera, aspectRatio);
 
         // Activar los shaders
         useShader(phong);
@@ -152,6 +150,7 @@ int main()
         shaderSetMat4(phong, "projection", projection);
         shaderSetFloat(phong, "slAmbient", 0.2f);
 
+        // Dibujar la escena
         drawRoom(room, phong);
 
         // Intercambiar buffers y procesar eventos
