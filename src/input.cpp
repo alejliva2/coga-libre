@@ -86,6 +86,11 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         g_camera->position += g_camera->right * distance;
 
+    if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS)
+    {
+        g_camera->mode = (g_camera->mode == CAM_MODE_FIRST_PERSON) ? CAM_MODE_THIRD_PERSON : CAM_MODE_FIRST_PERSON;
+    }
+
     // Fijar la altura del ojo para el movimiento horizontal
     g_camera->position.y = HEIGHT_EYE;
 }

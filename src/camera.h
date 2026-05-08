@@ -30,10 +30,11 @@ typedef struct
     bool firstMouse;    // Para evitar saltos en la primera lectura del ratón
     float lastX;        // Última posición X del ratón
     float lastY;        // Última posición Y del ratón
+
+    // -- Modo de Cámara --
+    int mode;         // 1 para primera persona, 3 para tercera persona
 } Camera;
 
-
-extern Camera cam;
 
 void initCamera(Camera &cam, glm::vec3 initialPosition);
 void processMouseMovement(Camera &cam, float xpos, float ypos);

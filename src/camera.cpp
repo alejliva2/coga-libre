@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "constants.h"
 
+
 namespace
 {
     // =========================
@@ -48,6 +49,8 @@ void initCamera(Camera &cam, glm::vec3 initialPosition)
 
     cam.firstMouse = true;
 
+    cam.mode = CAM_MODE_FIRST_PERSON; // modo primera persona por defecto
+
     _updateCameraVectors(cam);
 }
 
@@ -80,13 +83,19 @@ void processMouseMovement(Camera &cam, float xpos, float ypos)
 }
 
 // OBTENER LA MATRIZ DE VISTA
-glm::mat4 getViewMatrix(const Camera &cam)
-{
-    return glm::lookAt(cam.position,
-                       cam.position + cam.front,
-                       cam.up);
+glm::mat4 getViewMatrix(const Camera &cam) {
+    if (cam.mode == CAM_MODE_FIRST_PERSON) {
+        // Primera persona: cámara en el ojo, mirando hacia la dirección front
+        return glm::lookAt(cam.position, cam.position + cam.front, cam.up);
+    } else { // Tercera persona
+        // Colocar la cámara detrás del personaje (la posición del personaje es cam.position)
+        float distance = 5.0f;
+        float heightOffset = 1.5f;
+        glm::vec3 cameraPos = cam.position - cam.front * distance + cam.up * heightOffset;
+        // Mirar hacia el personaje
+        return glm::lookAt(cameraPos, cam.position, cam.up);
+    }
 }
-
 // OBTENER LA MATRIZ DE PROYECCIÓN
 glm::mat4 getProjectionMatrix(const Camera &cam, float aspectRatio)
 {

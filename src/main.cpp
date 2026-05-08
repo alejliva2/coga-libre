@@ -13,6 +13,8 @@
 #include "scene.h"
 #include "shader.h"
 #include "textures.h"
+#include "timedata.h"
+#include "lighting.h"
 
 // Declaración externa de la función de carga de los shaders
 // Esta es la función que usábamos antes
@@ -113,9 +115,14 @@ int main()
     TimeData time;
     Camera camera;
     Room room;
+    FlashLight flashlight;
+    Character character;
+
     initTime(time);
     initCamera(camera, glm::vec3(0.0f, HEIGHT_EYE, 0.0f));
     initRoom(room, phong.programID);
+    initFlashlight(flashlight);
+    initCharacter(character);
 
     // =========================
     // 6. Callbacks
@@ -137,6 +144,9 @@ int main()
         // Calcular el aspectRatio
         float aspectRatio = (float)SCR_WIDTH / (float)SCR_HEIGHT;
 
+        // Procesamos el tiempo
+        updateTime(time);
+
         // Procesar el input
         processInput(window);
 
@@ -148,10 +158,16 @@ int main()
         useShader(phong);
         shaderSetMat4(phong, "view", view);
         shaderSetMat4(phong, "projection", projection);
-        shaderSetFloat(phong, "slAmbient", 0.2f);
+
+        updateFlashlight(flashlight, camera.position, camera.front);
+        sendFlashlightToShader(flashlight, phong, camera);
+        shaderSetInt(phong, "diffuseTex", 0);
+
+        character.position = camera.position; // Hacemos que el personaje siga a la cámara
 
         // Dibujar la escena
         drawRoom(room, phong);
+        drawCharacter(character, phong, camera);
 
         // Intercambiar buffers y procesar eventos
         glfwSwapBuffers(window);
