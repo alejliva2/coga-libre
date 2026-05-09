@@ -10,6 +10,8 @@
 #include "shader.h"
 #include "textures.h"
 
+Box boxes[BOX_COUNT];
+
 // =========================
 // PÚBLICAS
 // =========================
@@ -401,6 +403,62 @@ void initRoom(Room &room, GLuint shaderProgram)
     room.modelLoc = glGetUniformLocation(shaderProgram, "model");
 }
 
+// INICIALIZAR LAS CAJAS
+void initBoxes(Box b[])
+{
+    struct BoxDef
+    {
+        glm::vec3 pos;
+        glm::vec3 scale;
+        float yRot;
+    };
+
+    BoxDef defs[BOX_COUNT] = {
+        { {  3.0f, 1.0f, -20.0f }, { 2.0f, 2.0f, 2.0f },  15.0f },
+        { {  3.0f, 3.0f, -20.0f }, { 2.0f, 2.0f, 2.0f },  -8.0f }, // encima
+        { { -3.0f, 1.0f,  -5.0f }, { 2.0f, 2.0f, 2.0f },  30.0f },
+        { {  3.0f, 1.5f,  10.0f }, { 2.5f, 3.0f, 2.5f },   0.0f },
+        { {  0.0f, 1.0f,  20.0f }, { 2.0f, 2.0f, 2.0f },  45.0f },
+        { { -3.0f, 1.0f,  30.0f }, { 2.0f, 2.0f, 2.0f }, -20.0f },
+    };
+
+    // Iterar sobre las cajas, cargar la textura e inicializar valores
+    for (int i = 0; i < BOX_COUNT; i++)
+    {
+        configObject(b[i].body);
+        b[i].body.textureID = loadTexture("textures/box.jpg");
+        b[i].body.vertexCount = VERTEX_COUNT;
+        b[i].position = defs[i].pos;
+        b[i].scale = defs[i].scale;
+        b[i].yRot = defs[i].yRot;
+    }
+}
+
+// DIBUJAR LAS CAJAS
+void drawBoxes(Box boxes[], Shader shader)
+{
+    // Realizar transformaciones
+    for (int i = 0; i < BOX_COUNT; i++)
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, boxes[i].position);
+        model = glm::rotate(model, glm::radians(boxes[i].yRot), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, boxes[i].scale);
+    
+
+        // Enviar al shader
+        shaderSetMat4(shader, "model", model);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, boxes[i].body.textureID);
+        
+        glBindVertexArray(boxes[i].body.VAO);
+        glDrawArrays(GL_TRIANGLES, 0, boxes[i].body.vertexCount);
+        glBindVertexArray(0);
+    }
+}
+
+// DIBUJAR EL PASILLO
 void drawRoom(Room &room, Shader shader)
 {
     // Un struct almacena cada parte del pasillo
@@ -410,21 +468,25 @@ void drawRoom(Room &room, Shader shader)
         glm::vec3 pos;
         glm::vec3 scale;
     };
+
     Piece pieces[] = {
-        {room.floor,                {0, -WALL_THICKNESS / 2, 0}, {HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH}},
-        {room.ceiling, {0, HALL_HEIGHT + WALL_THICKNESS / 2, 0}, {HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH}},
-        {room.wallFront, {0, HALL_HEIGHT / 2, -HALL_LENGTH / 2}, {HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS}},
-        {room.wallBack,   {0, HALL_HEIGHT / 2, HALL_LENGTH / 2}, {HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS}},
-        {room.wallRight,  {HALL_WIDTH / 2, HALL_HEIGHT / 2, 0}, {WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH}},
-        {room.wallLeft,  {-HALL_WIDTH / 2, HALL_HEIGHT / 2, 0}, {WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH}},
+        { room.floor,     { 0, -WALL_THICKNESS / 2, 0              }, { HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH  } },
+        { room.ceiling,   { 0, HALL_HEIGHT + WALL_THICKNESS / 2, 0 }, { HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH  } },
+        { room.wallFront, { 0, HALL_HEIGHT / 2, -HALL_LENGTH / 2   }, { HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS  } },
+        { room.wallBack,  { 0, HALL_HEIGHT / 2, HALL_LENGTH / 2    }, { HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS  } },
+        { room.wallRight, { HALL_WIDTH / 2, HALL_HEIGHT / 2, 0     }, { WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH } },
+        { room.wallLeft,  { -HALL_WIDTH / 2, HALL_HEIGHT / 2, 0    }, { WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH } },
     };
 
-    // Iteramos sobre cada parte, calculamos su modelo y la dibujamos
+    // Iterar sobre cada parte, calcular su modelo y dibujarlo
     for (auto &p : pieces)
     {
+        // Realizar transformaciones
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, p.pos);
         model = glm::scale(model, p.scale);
+
+        // Enviar al shader
         shaderSetMat4(shader, "model", model);
 
         glActiveTexture(GL_TEXTURE0);

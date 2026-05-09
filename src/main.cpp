@@ -9,12 +9,12 @@
 #include "camera.h"
 #include "character.h"
 #include "constants.h"
+#include "lighting.h"
 #include "input.h"
 #include "scene.h"
 #include "shader.h"
 #include "textures.h"
 #include "timedata.h"
-#include "lighting.h"
 
 // Declaración externa de la función de carga de los shaders
 // Esta es la función que usábamos antes
@@ -115,11 +115,13 @@ int main()
     TimeData time;
     Camera camera;
     Room room;
+    Box boxes[BOX_COUNT];
     Flashlight flashlight;
     Character character;
     initTime(time);
     initCamera(camera, glm::vec3(0.0f, HEIGHT_EYE, -HALL_LENGTH / 2.0f + 1.5f));
     initRoom(room, phong.programID);
+    initBoxes(boxes);
     initFlashlight(flashlight);
     initCharacter(character);
 
@@ -127,21 +129,25 @@ int main()
     // 6. Callbacks
     // =========================
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    registerInputCallbacks(window, &time, &camera);
+    registerInputCallbacks(window, &time, &camera, &flashlight);
 
     // =========================
     // 7. Loop principal
     // =========================
     while (!glfwWindowShouldClose(window))
     {
-        // Input
-        // processInput(window);
-
         // Limpieza de profundidad
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Calcular el aspectRatio
-        float aspectRatio = (float)SCR_WIDTH / (float)SCR_HEIGHT;
+        // Calcular el aspectRatio utilizando el tamaño del framebuffer
+        // Si se hace estáticamente, cambian las proporciones en pantalla completa
+        int fbW, fbH;
+        glfwGetFramebufferSize(window, &fbW, &fbH);
+        float aspectRatio;
+        if (fbH > 0)
+            aspectRatio = (float)fbW / (float)fbH;
+        else
+            aspectRatio = 1.0f;
 
         // Procesamos el tiempo
         updateTime(time);
@@ -170,6 +176,7 @@ int main()
 
         // Dibujar la escena
         drawRoom(room, phong);
+        drawBoxes(boxes, phong);
         drawCharacter(character, phong, camera);
 
         // Intercambiar buffers y procesar eventos

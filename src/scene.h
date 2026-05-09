@@ -4,8 +4,10 @@
 #include "character.h"
 #include "shader.h"
 
-
-typedef struct
+// =========================
+// ESCENA
+// =========================
+struct Room
 {
     BodyPart floor;
     BodyPart ceiling;
@@ -14,17 +16,22 @@ typedef struct
     BodyPart wallLeft;
     BodyPart wallRight;
 
-    GLuint modelLoc; // ubicación del uniform "model" en el shader
-} Room;
+    GLuint modelLoc; // Ubicación del uniform "model" en el shader
+};
 
-extern Room room;
+struct Box
+{
+    BodyPart body;
+    glm::vec3 position;
+    glm::vec3 scale;
+    float yRot; // Rotación en Y para que no estén todas alineadas
+};
 
-// =========================
-// FUNCIONES
-// =========================
 void configSphere(BodyPart &object);
 void configObject(BodyPart &object);
 void initRoom(Room &room, GLuint shaderProgram);
+void initBoxes(Box boxes[]);
 void drawRoom(Room &room, Shader shader);
+void drawBoxes(Box boxes[], Shader shader);
 
 #endif // SCENE_H
