@@ -11,22 +11,15 @@
 #include "textures.h"
 
 // =========================
-// VARIABLES GLOBALES
-// =========================
-Room room;
-
-
-// =========================
 // PÚBLICAS
 // =========================
-
 // Configura la geometría OpenGL de la articulación esférica
 // El formato de cada vértice en vertices_esfera es:
 // - normal (3 floats)
 // - coordenada de textura (2 floats)
 // - posición (3 floats)
-
-void configSphere(BodyPart &object) {
+void configSphere(BodyPart &object)
+{
     glGenVertexArrays(1, &object.VAO);
     glGenBuffers(1, &object.VBO);
 
@@ -35,106 +28,359 @@ void configSphere(BodyPart &object) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_esfera), vertices_esfera, GL_STATIC_DRAW);
 
     // Atributo 0: posición (vec3)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
     glEnableVertexAttribArray(0);
 
     // Atributo 1: normal (vec3)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
 
     // Atributo 2: coordenada de textura (vec2)
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
     object.vertexCount = sizeof(vertices_esfera) / (8 * sizeof(float));
-
 }
 
 // Configura la geometría OpenGL de un cubo
 // - El buffer contiene posición y color por vértice
 // - En esta configuración solo se habilita el atributo de posición
-void configObject(BodyPart& object) {
+void configObject(BodyPart &object)
+{
     float vertices[] = {
         // Cubo formado por 6 caras, cada una compuesta por 2 triángulos
         // Total: 36 vértices.
         // pos(3)          normal(3)           uv(2)
         // Cara frontal (z = 0.5)
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+        -0.5f,
+        -0.5f,
+        0.5f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.0f,
+        0.5f,
+        -0.5f,
+        0.5f,
+        0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        0.0f,
+        0.5f,
+        0.5f,
+        0.5f,
+        0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        0.5f,
+        0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        -0.5f,
+        0.5f,
+        0.5f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        1.0f,
+        -0.5f,
+        -0.5f,
+        0.5f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.0f,
 
         // Cara trasera (z = -0.5)
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f,
+        -0.5f,
+        -0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        -1.0f,
+        1.0f,
+        0.0f,
+        -0.5f,
+        0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        1.0f,
+        0.5f,
+        -0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        -0.5f,
+        -0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        -1.0f,
+        1.0f,
+        0.0f,
 
         // Cara derecha (x = 0.5)
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+        0.5f,
+        -0.5f,
+        0.5f,
+        1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.5f,
+        0.5f,
+        0.5f,
+        1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        -0.5f,
+        1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        -0.5f,
+        1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        -0.5f,
+        -0.5f,
+        1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.5f,
+        -0.5f,
+        0.5f,
+        1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
 
         // Cara izquierda (x = -0.5)
-        -0.5f, -0.5f,  0.5f, -1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+        -0.5f,
+        -0.5f,
+        0.5f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        -0.5f,
+        0.5f,
+        0.5f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        -0.5f,
+        0.5f,
+        -0.5f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        -0.5f,
+        0.5f,
+        -0.5f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        -0.5f,
+        -0.5f,
+        -0.5f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        -0.5f,
+        -0.5f,
+        0.5f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
 
         // Cara superior (y = 0.5)
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        -0.5f,
+        0.5f,
+        0.5f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        0.5f,
+        0.0f,
+        1.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        0.5f,
+        -0.5f,
+        0.0f,
+        1.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.5f,
+        0.5f,
+        -0.5f,
+        0.0f,
+        1.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        -0.5f,
+        0.5f,
+        -0.5f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        -0.5f,
+        0.5f,
+        0.5f,
+        0.0f,
+        1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
 
         // Cara inferior (y = -0.5)
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+        -0.5f,
+        -0.5f,
+        0.5f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        -0.5f,
+        -0.5f,
+        -0.5f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.5f,
+        -0.5f,
+        -0.5f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        -0.5f,
+        -0.5f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        0.5f,
+        -0.5f,
+        0.5f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        -0.5f,
+        -0.5f,
+        0.5f,
+        0.0f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
     };
 
-    
+    // Generar VAO y VBO
     glGenVertexArrays(1, &object.VAO);
     glGenBuffers(1, &object.VBO);
-    
-    glBindVertexArray(object.VAO);
+
+    glBindVertexArray(object.VAO); // El VAO comienza a "grabar"
+
+    // Enviar datos al VBO
     glBindBuffer(GL_ARRAY_BUFFER, object.VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    
+
     // Atributo 0: posición (vec3)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    
-    // Atributo 1: normal (vec3)    
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    // Atributo 1: normal (vec3)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    
-    // Atributo 2: coordenada textura (vec2)
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+    // Atributo 2: coordenada de textura (vec2)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
 }
 
-
-void initRoom(Room &room, GLuint shaderProgram) {
+void initRoom(Room &room, GLuint shaderProgram)
+{
     // Configurar cada parte de la habitación
     configObject(room.floor);
     configObject(room.ceiling);
@@ -157,15 +403,20 @@ void initRoom(Room &room, GLuint shaderProgram) {
 
 void drawRoom(Room &room, Shader shader)
 {
-    // Hacemos un struct para almacenar la información de cada parte de la habitación 
-    struct Piece { BodyPart &part; glm::vec3 pos; glm::vec3 scale; };
+    // Un struct almacena cada parte del pasillo
+    struct Piece
+    {
+        BodyPart &part;
+        glm::vec3 pos;
+        glm::vec3 scale;
+    };
     Piece pieces[] = {
-        { room.floor,     {    0,   0,    0 }, { ROOM_WIDTH,  WALL_THICKNESS,  ROOM_DEPTH } },
-        { room.ceiling,   {    0,   ROOM_HEIGHT,    0 }, { ROOM_WIDTH,  WALL_THICKNESS,  ROOM_DEPTH } },
-        { room.wallFront, {    0, ROOM_HEIGHT/2, -ROOM_DEPTH/2 }, { ROOM_WIDTH,  ROOM_HEIGHT,  WALL_THICKNESS } },
-        { room.wallBack,  {    0, ROOM_HEIGHT/2,  ROOM_DEPTH/2 }, { ROOM_WIDTH,  ROOM_HEIGHT,  WALL_THICKNESS } },
-        { room.wallRight, {  ROOM_WIDTH/2, ROOM_HEIGHT/2,    0 }, { WALL_THICKNESS,  ROOM_HEIGHT,  ROOM_DEPTH } },
-        { room.wallLeft,  { -ROOM_WIDTH/2, ROOM_HEIGHT/2,    0 }, { WALL_THICKNESS,  ROOM_HEIGHT,  ROOM_DEPTH } },
+        {room.floor,                {0, -WALL_THICKNESS / 2, 0}, {HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH}},
+        {room.ceiling, {0, HALL_HEIGHT + WALL_THICKNESS / 2, 0}, {HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH}},
+        {room.wallFront, {0, HALL_HEIGHT / 2, -HALL_LENGTH / 2}, {HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS}},
+        {room.wallBack,   {0, HALL_HEIGHT / 2, HALL_LENGTH / 2}, {HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS}},
+        {room.wallRight,  {HALL_WIDTH / 2, HALL_HEIGHT / 2, 0}, {WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH}},
+        {room.wallLeft,  {-HALL_WIDTH / 2, HALL_HEIGHT / 2, 0}, {WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH}},
     };
 
     // Iteramos sobre cada parte, calculamos su modelo y la dibujamos

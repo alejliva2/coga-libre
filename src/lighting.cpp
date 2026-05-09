@@ -4,43 +4,57 @@
 #include "camera.h"
 #include "constants.h"
 
-FlashLight flashlight;
-
-// Inicializamos la linterna con los valores por defecto
-void initFlashlight(FlashLight &fl)
+// =========================
+// PÚBLICAS
+// =========================
+// INICIALIZAR LINTERA
+void initFlashlight(Flashlight &flashlight)
 {
-    fl.position = glm::vec3(0.0f, HEIGHT_EYE, 0.0f);
-    fl.direction = glm::vec3(0.0f, 0.0f, -1.0f);
-
-    fl.ambient = FLASHLIGHT_AMBIENT;
-    fl.diffuse = FLASHLIGHT_DIFFUSE;
-    fl.specular = FLASHLIGHT_SPECULAR;
-    fl.specularStrength = FLASHLIGHT_SPECULAR_STRENGTH;
-
-    fl.innerAngle = FLASHLIGHT_INNER_ANGLE;
-    fl.outerAngle = FLASHLIGHT_OUTER_ANGLE;
+    flashlight.position = glm::vec3(0.0f, HEIGHT_EYE, 0.0f);
+    flashlight.direction = glm::vec3(0.0f, 0.0f, -1.0f);
+    flashlight.ambient = FLASHLIGHT_ON_AMBIENT;
+    flashlight.diffuse = FLASHLIGHT_ON_DIFFUSE;
+    flashlight.specular = FLASHLIGHT_ON_SPECULAR;
+    flashlight.specularStrength = FLASHLIGHT_SPECULAR_STRENGTH;
+    flashlight.innerAngle = FLASHLIGHT_INNER_ANGLE;
+    flashlight.outerAngle = FLASHLIGHT_OUTER_ANGLE;
+    flashlight.isOn = true;
 }
 
-// Actualizamos la posición y dirección de la linterna
-void updateFlashlight(FlashLight &fl, const glm::vec3 &position, const glm::vec3 &direction)
+// ACTUALIZAR POSICIÓN Y DIRECCIÓN DE LA LINTERNA
+void updateFlashlight(Flashlight &flashlight, const glm::vec3 &position, const glm::vec3 &direction)
 {
-    fl.position = position;
-    fl.direction = direction;
+    flashlight.position = position;
+    flashlight.direction = direction;
 }
 
-// Mandamos los parámetros de la linterna al shader
-void sendFlashlightToShader(const FlashLight &fl, Shader shader, const Camera &cam)
+// ENCENDER/APAGAR LA LINTERNA
+void toggleFlashlight(Flashlight &flashlight)
 {
-    shaderSetVec3(shader, "slPos", fl.position);
-    shaderSetVec3(shader, "slDir", fl.direction);
+    flashlight.isOn = !flashlight.isOn;
+}
+
+// ENVIAR PARÁMETROS DE LA LINTERNA AL SHADER
+void sendFlashlightToShader(const Flashlight &flashlight, Shader shader, const Camera &cam)
+{
+    shaderSetVec3(shader, "slPos", flashlight.position);
+    shaderSetVec3(shader, "slDir", flashlight.direction);
     shaderSetVec3(shader, "camPos", cam.position);
 
-    shaderSetFloat(shader, "slAmbient", fl.ambient);
-    shaderSetFloat(shader, "slDiffuse", fl.diffuse);
-    shaderSetFloat(shader, "slSpecular", fl.specular);
+    if (flashlight.isOn)
+    {
+        shaderSetFloat(shader, "slAmbient", flashlight.ambient);
+        shaderSetFloat(shader, "slDiffuse", flashlight.diffuse);
+        shaderSetFloat(shader, "slSpecular", flashlight.specular);
+    }
+    else
+    {
+        shaderSetFloat(shader, "slAmbient", FLASHLIGHT_OFF_AMBIENT);
+        shaderSetFloat(shader, "slDiffuse", FLASHLIGHT_OFF_DIFFUSE);
+        shaderSetFloat(shader, "slSpecular", FLASHLIGHT_OFF_SPECULAR);
+    }
     
-    shaderSetFloat(shader, "inAngle", glm::cos(glm::radians(fl.innerAngle)));
-    shaderSetFloat(shader, "extAngle", glm::cos(glm::radians(fl.outerAngle)));
-    shaderSetFloat(shader, "specularStrength", fl.specularStrength);
-    
+    shaderSetFloat(shader, "inAngle", glm::cos(glm::radians(flashlight.innerAngle)));
+    shaderSetFloat(shader, "extAngle", glm::cos(glm::radians(flashlight.outerAngle)));
+    shaderSetFloat(shader, "specularStrength", flashlight.specularStrength);
 }

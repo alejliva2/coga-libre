@@ -35,8 +35,13 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(window, true);
         break;
-
-        // TODO añadir más teclas
+    // Cambiar el modo de la cámara
+    case GLFW_KEY_F5:
+        if(g_camera->mode == CAM_MODE_FIRST_PERSON)
+            g_camera->mode = CAM_MODE_THIRD_PERSON;
+        else
+            g_camera->mode = CAM_MODE_FIRST_PERSON;
+        break;
     }
 }
 
@@ -85,11 +90,6 @@ void processInput(GLFWwindow *window)
         g_camera->position -= g_camera->right * distance;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         g_camera->position += g_camera->right * distance;
-
-    if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS)
-    {
-        g_camera->mode = (g_camera->mode == CAM_MODE_FIRST_PERSON) ? CAM_MODE_THIRD_PERSON : CAM_MODE_FIRST_PERSON;
-    }
 
     // Fijar la altura del ojo para el movimiento horizontal
     g_camera->position.y = HEIGHT_EYE;

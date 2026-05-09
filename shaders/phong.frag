@@ -40,20 +40,28 @@ void main()
     if (cosAngle > extAngle)
     {
         // 3. DIFUSA
-        float diffuseFactor = max(dot(wNormal, dirVector), 0.0);
+        float diffuseFactor = max(dot(normalize(wNormal), dirVector), 0.0);
         vec3 diffuse = slDiffuse * diffuseFactor * baseColor.rgb;
 
         // 4. ESPECULAR
-        vec3 refVector = reflect(-dirVector, wNormal);
+        vec3 refVector = reflect(-dirVector, normalize(wNormal));
         vec3 viewVector = normalize(camPos - wPos);
         float specularFactor = pow(max(dot(viewVector, refVector), 0.0), specularStrength);
         vec3 specular = vec3(slSpecular * specularFactor);
 
-        // 5. ATENUACIÓN suave en los bordes del Coordenadas
+        // 5. ATENUACIÓN suave en los bordes del cono
         float coneFactor = smoothstep(extAngle, inAngle, cosAngle);
 
+        // 6. ATENUACIÓN conforme incrementa la distancia viajada del rayo de luz
+        float constant = 1.0;
+        float linear = 0.09;
+        float quadratic = 0.032;
+
+        float distance = length(slPos - wPos);
+        float attenuation = 1.0 / (constant + linear * distance + quadratic * distance * distance);
+
         // 6. FINAL
-        final = ambient + coneFactor * (diffuse + specular);
+        final = ambient + coneFactor * attenuation * (diffuse + specular);
     }
 
     // Se establece el color final del píxel
