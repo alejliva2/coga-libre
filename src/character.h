@@ -7,7 +7,9 @@
 #include "shader.h"
 #include "camera.h"
 
-
+// =========================
+// CHARACTER
+// =========================
 typedef struct
 {
     glm::vec3 position;
@@ -36,11 +38,6 @@ typedef struct
     glm::vec3 position;
 } Character;
 
-extern Character character;
-
-// =========================
-// FUNCIONES
-// =========================
 void initCharacter(Character &ch);
 void drawCharacter(Character &ch, Shader shader, const Camera &cam);
 
