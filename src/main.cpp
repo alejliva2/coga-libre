@@ -115,11 +115,10 @@ int main()
     TimeData time;
     Camera camera;
     Room room;
-    FlashLight flashlight;
+    Flashlight flashlight;
     Character character;
-
     initTime(time);
-    initCamera(camera, glm::vec3(0.0f, HEIGHT_EYE, 0.0f));
+    initCamera(camera, glm::vec3(0.0f, HEIGHT_EYE, -HALL_LENGTH / 2.0f + 1.5f));
     initRoom(room, phong.programID);
     initFlashlight(flashlight);
     initCharacter(character);
@@ -159,11 +158,15 @@ int main()
         shaderSetMat4(phong, "view", view);
         shaderSetMat4(phong, "projection", projection);
 
+        // Actualizar el motor de luz
         updateFlashlight(flashlight, camera.position, camera.front);
         sendFlashlightToShader(flashlight, phong, camera);
         shaderSetInt(phong, "diffuseTex", 0);
 
-        character.position = camera.position; // Hacemos que el personaje siga a la cámara
+        // Hacer que el personaje siga a la cámara
+        character.position = camera.position;
+        // Hacer que el personaje esté pegado al suelo
+        character.position.y = CHARACTER_INITIAL_Y;
 
         // Dibujar la escena
         drawRoom(room, phong);

@@ -6,7 +6,6 @@
 #include "camera.h"
 #include "constants.h"
 
-
 namespace
 {
     // =========================
@@ -83,19 +82,40 @@ void processMouseMovement(Camera &cam, float xpos, float ypos)
 }
 
 // OBTENER LA MATRIZ DE VISTA
-glm::mat4 getViewMatrix(const Camera &cam) {
-    if (cam.mode == CAM_MODE_FIRST_PERSON) {
+glm::mat4 getViewMatrix(const Camera &cam)
+{
+    if (cam.mode == CAM_MODE_FIRST_PERSON)
+    {
         // Primera persona: cámara en el ojo, mirando hacia la dirección front
-        return glm::lookAt(cam.position, cam.position + cam.front, cam.up);
-    } else { // Tercera persona
+        return glm::lookAt(
+            cam.position,
+            cam.position + cam.front,
+            cam.up);
+    }
+    else
+    {
+        // Tercera persona
         // Colocar la cámara detrás del personaje (la posición del personaje es cam.position)
-        float distance = 5.0f;
-        float heightOffset = 1.5f;
+        float distance = CAM_DISTANCE_THIRD_PERSON;
+        float heightOffset = CAM_HEIGHT_OFFSET_THIRD_PERSON;
         glm::vec3 cameraPos = cam.position - cam.front * distance + cam.up * heightOffset;
+
+        // Clamp para que no salga de los límites del pasillo (roto)
+        /*
+        float halfW = HALL_WIDTH / 2.0f - COLLISION_MARGIN;
+        float halfL = HALL_LENGTH / 2.0f - COLLISION_MARGIN;
+        cameraPos.x = glm::clamp(cameraPos.x, -halfW, -halfW);
+        cameraPos.z = glm::clamp(cameraPos.z, -halfL, -halfL);
+        */
+
         // Mirar hacia el personaje
-        return glm::lookAt(cameraPos, cam.position, cam.up);
+        return glm::lookAt(
+            cameraPos,
+            cam.position,
+            cam.up);
     }
 }
+
 // OBTENER LA MATRIZ DE PROYECCIÓN
 glm::mat4 getProjectionMatrix(const Camera &cam, float aspectRatio)
 {
