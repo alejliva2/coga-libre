@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -43,6 +41,7 @@ namespace
         // Enviar matriz al shader
         shaderSetMat4(shader, "model", model);
         shaderSetInt(shader, "diffuseTex", 0);
+        shaderSetVec2(shader, "uvScale", glm::vec2(1.0f, 1.0f));
 
         // Establecer texturas
         glActiveTexture(GL_TEXTURE0);
@@ -67,6 +66,7 @@ namespace
 
         // Enviar matriz al shader
         shaderSetMat4(shader, "model", model);
+        shaderSetVec2(shader, "uvScale", glm::vec2(1.0f, 1.0f));
 
         // Establecer texturas
         glActiveTexture(GL_TEXTURE0);
@@ -205,7 +205,7 @@ void updateCharacter(Character &character, float deltaTime)
     else
     {
         // Volver suevamente a 0 cuando para
-        character.leftLegAngle *= 0.85;
-        character.leftLegAngle *= 0.85;
+        character.leftLegAngle *= DECELERATION_FACTOR;
+        character.rightLegAngle *= DECELERATION_FACTOR;
     }
 }

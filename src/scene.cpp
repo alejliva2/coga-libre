@@ -1,15 +1,11 @@
 #include <glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "constants.h"
 #include "scene.h"
 #include "shader.h"
 #include "textures.h"
-
-Box boxes[BOX_COUNT];
 
 // =========================
 // PÚBLICAS
@@ -19,7 +15,7 @@ Box boxes[BOX_COUNT];
 // - En esta configuración solo se habilita el atributo de posición
 void configObject(BodyPart &object)
 {
-     float vertices[] = {
+    float vertices[] = {
         // Cubo formado por 6 caras, cada una compuesta por 2 triángulos
         // Total: 36 vértices.
         // pos(3)          normal(3)           uv(2)
@@ -213,7 +209,7 @@ void drawRoom(Room &room, Shader shader)
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, p.part.textureID);
         glBindVertexArray(p.part.VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, VERTEX_COUNT);
         glBindVertexArray(0);
     }
 }

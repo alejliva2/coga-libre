@@ -2,7 +2,6 @@
 #define CONSTANTS_H
 
 #include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
 // =========================
 // LOG
@@ -84,6 +83,7 @@ const glm::vec3 RIGHT_LEG_POSITION = glm::vec3(0.22f, 0.10f, 0.0f);
 const glm::vec3 LEG_SCALE = glm::vec3(0.28f, 1.20f, 0.35f);
 const float LEG_SWING_AMPLITUDE = 25.0f; // grados máximos de oscilación
 const float LEG_SWING_SPEED = 8.0f;      // frecuencia en rad/s
+const float DECELERATION_FACTOR = 0.85f; // reducir velocidad de piernas
 
 const glm::vec3 TP_FLASHLIGHT_POSITION = glm::vec3(0.55f, -0.15f, -0.35f);
 const glm::vec3 TP_FLASHLIGHT_POSITION_OFFSET = glm::vec3(0.0f, -0.65f, 0.0f);

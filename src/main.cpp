@@ -4,7 +4,6 @@
 #include <glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "camera.h"
 #include "character.h"
