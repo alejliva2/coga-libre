@@ -98,14 +98,6 @@ glm::mat4 getViewMatrix(const Camera &cam)
         float heightOffset = CAM_HEIGHT_OFFSET_THIRD_PERSON;
         glm::vec3 cameraPos = cam.position - cam.front * distance + cam.up * heightOffset;
 
-        // Clamp para que no salga de los límites del pasillo (roto)
-        /*
-        float halfW = HALL_WIDTH / 2.0f - COLLISION_MARGIN;
-        float halfL = HALL_LENGTH / 2.0f - COLLISION_MARGIN;
-        cameraPos.x = glm::clamp(cameraPos.x, -halfW, -halfW);
-        cameraPos.z = glm::clamp(cameraPos.z, -halfL, -halfL);
-        */
-
         // Mirar hacia el personaje
         return glm::lookAt(
             cameraPos,
