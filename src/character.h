@@ -36,10 +36,16 @@ typedef struct
     BodyPart flashlight;
 
     glm::vec3 position;
+
+    // Movimiento
+    bool isMoving;
+    float walkTimer;
+    float leftLegAngle;
+    float rightLegAngle;
 } Character;
 
-void initCharacter(Character &ch);
-void drawCharacter(Character &ch, Shader shader, const Camera &cam);
-
+void initCharacter(Character &character);
+void drawCharacter(Character &character, Shader shader, const Camera &camera);
+void updateCharacter(Character &character, float deltaTime);
 
 #endif // CHARACTER_H

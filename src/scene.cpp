@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "constants.h"
-#include "esfera.h"
 #include "scene.h"
 #include "shader.h"
 #include "textures.h"
@@ -15,36 +14,6 @@ Box boxes[BOX_COUNT];
 // =========================
 // PÚBLICAS
 // =========================
-// Configura la geometría OpenGL de la articulación esférica
-// El formato de cada vértice en vertices_esfera es:
-// - normal (3 floats)
-// - coordenada de textura (2 floats)
-// - posición (3 floats)
-void configSphere(BodyPart &object)
-{
-    glGenVertexArrays(1, &object.VAO);
-    glGenBuffers(1, &object.VBO);
-
-    glBindVertexArray(object.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, object.VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_esfera), vertices_esfera, GL_STATIC_DRAW);
-
-    // Atributo 0: posición (vec3)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-
-    // Atributo 1: normal (vec3)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-
-    // Atributo 2: coordenada de textura (vec2)
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-    object.vertexCount = sizeof(vertices_esfera) / (8 * sizeof(float));
-}
-
 // Configura la geometría OpenGL de un cubo
 // - El buffer contiene posición y color por vértice
 // - En esta configuración solo se habilita el atributo de posición
@@ -406,6 +375,7 @@ void initRoom(Room &room, GLuint shaderProgram)
 // INICIALIZAR LAS CAJAS
 void initBoxes(Box b[])
 {
+    // Estructura temporal, solo para la inicialización
     struct BoxDef
     {
         glm::vec3 pos;
@@ -445,13 +415,13 @@ void drawBoxes(Box boxes[], Shader shader)
         model = glm::rotate(model, glm::radians(boxes[i].yRot), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, boxes[i].scale);
     
-
         // Enviar al shader
         shaderSetMat4(shader, "model", model);
+        shaderSetVec2(shader, "uvScale", glm::vec2(1.0f, 1.0f));
 
+        // Activar y enlazar textura
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, boxes[i].body.textureID);
-        
         glBindVertexArray(boxes[i].body.VAO);
         glDrawArrays(GL_TRIANGLES, 0, boxes[i].body.vertexCount);
         glBindVertexArray(0);
@@ -467,15 +437,16 @@ void drawRoom(Room &room, Shader shader)
         BodyPart &part;
         glm::vec3 pos;
         glm::vec3 scale;
+        glm::vec2 uvScale;
     };
 
     Piece pieces[] = {
-        { room.floor,     { 0, -WALL_THICKNESS / 2, 0              }, { HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH  } },
-        { room.ceiling,   { 0, HALL_HEIGHT + WALL_THICKNESS / 2, 0 }, { HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH  } },
-        { room.wallFront, { 0, HALL_HEIGHT / 2, -HALL_LENGTH / 2   }, { HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS  } },
-        { room.wallBack,  { 0, HALL_HEIGHT / 2, HALL_LENGTH / 2    }, { HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS  } },
-        { room.wallRight, { HALL_WIDTH / 2, HALL_HEIGHT / 2, 0     }, { WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH } },
-        { room.wallLeft,  { -HALL_WIDTH / 2, HALL_HEIGHT / 2, 0    }, { WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH } },
+        { room.floor,     { 0, -WALL_THICKNESS / 2, 0              }, { HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH  }, { HALL_WIDTH / TILE_SIZE, HALL_LENGTH / TILE_SIZE } },
+        { room.ceiling,   { 0, HALL_HEIGHT + WALL_THICKNESS / 2, 0 }, { HALL_WIDTH, WALL_THICKNESS, HALL_LENGTH  }, { HALL_WIDTH / TILE_SIZE, HALL_LENGTH / TILE_SIZE } },
+        { room.wallFront, { 0, HALL_HEIGHT / 2, -HALL_LENGTH / 2   }, { HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS  }, { HALL_WIDTH / TILE_SIZE, HALL_HEIGHT / TILE_SIZE } },
+        { room.wallBack,  { 0, HALL_HEIGHT / 2, HALL_LENGTH / 2    }, { HALL_WIDTH, HALL_HEIGHT, WALL_THICKNESS  }, { HALL_WIDTH / TILE_SIZE, HALL_HEIGHT / TILE_SIZE } },
+        { room.wallRight, { HALL_WIDTH / 2, HALL_HEIGHT / 2, 0     }, { WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH }, { HALL_WIDTH / TILE_SIZE, HALL_HEIGHT / TILE_SIZE } },
+        { room.wallLeft,  { -HALL_WIDTH / 2, HALL_HEIGHT / 2, 0    }, { WALL_THICKNESS, HALL_HEIGHT, HALL_LENGTH }, { HALL_WIDTH / TILE_SIZE, HALL_HEIGHT / TILE_SIZE } },
     };
 
     // Iterar sobre cada parte, calcular su modelo y dibujarlo
@@ -488,10 +459,11 @@ void drawRoom(Room &room, Shader shader)
 
         // Enviar al shader
         shaderSetMat4(shader, "model", model);
+        shaderSetVec2(shader, "uvScale", p.uvScale);
 
+        // Activar y enlazar texturas
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, p.part.textureID);
-
         glBindVertexArray(p.part.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);

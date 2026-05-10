@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,7 +19,8 @@ namespace
     void _drawPart(const BodyPart &part,
                    Shader shader,
                    const glm::vec3 &characterPosition = glm::vec3(0.0f),
-                   float characterYaw = 0.0f)
+                   float characterYaw = 0.0f,
+                   float xRotDeg = 0.0f)
     {
         // Construir la matriz de cada parte
         // 1. Escalar el cubo
@@ -27,7 +30,15 @@ namespace
         model = glm::rotate(model, glm::radians(characterYaw), glm::vec3(0.0f, 1.0f, 0.0f));    // 4
         model = glm::translate(model, part.position);                                           // 3
         model = glm::rotate(model, glm::radians(part.transAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // 2
-        model = glm::scale(model, part.scale);                                                  // 1
+        if (xRotDeg != 0.0f)
+        {
+            // Subir al pivote (cadera = mitad superior de la pierna)
+            glm::vec3 pivot = glm::vec3(0.0f, part.scale.y * 0.5f, 0.0f);
+            model = glm::translate(model, pivot);
+            model = glm::rotate(model, glm::radians(xRotDeg), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::translate(model, -pivot);
+        }
+        model = glm::scale(model, part.scale); // 1
 
         // Enviar matriz al shader
         shaderSetMat4(shader, "model", model);
@@ -125,28 +136,41 @@ void initCharacter(Character &character)
     character.rightArm.textureID = loadTexture("textures/arm.jpg");
     character.leftLeg.textureID = loadTexture("textures/leg.jpeg");
     character.rightLeg.textureID = loadTexture("textures/leg.jpeg");
-    character.flashlight.textureID = loadTexture("textures/blackMetal.jpg");
+    character.flashlight.textureID = loadTexture("textures/wall.jpg");
 }
 
 void drawCharacter(Character &character, Shader shader, const Camera &camera)
 {
     glm::vec3 position = character.position;
     // Orientación del personaje (mirando hacia la cámara)
-    float orientation = -camera.yaw + 90.0f;
+    float orientation = -camera.yaw - 90.0f;
 
     if (camera.mode == CAM_MODE_THIRD_PERSON)
     {
         // Actualizar para que el brazo derecho se queda en la posición de la primera persona
         character.rightArm.position = RIGHT_ARM_POSITION;
+
         // Posición de la linterna en la mano del personaje en tercera persona
-        character.flashlight.position = RIGHT_ARM_POSITION + TP_FLASHLIGHT_POSITION_OFFSET;
+        // Hombro derecho = extremo superior del brazo
+        glm::vec3 shoulder = RIGHT_ARM_POSITION + glm::vec3(0.0f, ARM_SCALE.y * 0.5f, 0.0f);
+
+        // Posición que tendría la linterna si el brazo no estuviera rotado
+        glm::vec3 flashlightRest = RIGHT_ARM_POSITION + TP_FLASHLIGHT_POSITION_OFFSET;
+
+        // Rotarla alrededor del hombro el mismo ángulo que el brazo
+        glm::vec3 offsetFromShoulder = flashlightRest - shoulder;
+        glm::mat4 rot = glm::rotate(glm::mat4(1.0f),
+                                    glm::radians(RIGHT_ARM_RAISED_ANGLE),
+                                    glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::vec3 rotatedOffset = glm::vec3(rot * glm::vec4(offsetFromShoulder, 1.0f));
+        character.flashlight.position = shoulder + rotatedOffset;
 
         _drawPart(character.head, shader, character.position, orientation);
         _drawPart(character.torso, shader, character.position, orientation);
         _drawPart(character.leftArm, shader, character.position, orientation);
-        _drawPart(character.rightArm, shader, character.position, orientation);
-        _drawPart(character.leftLeg, shader, character.position, orientation);
-        _drawPart(character.rightLeg, shader, character.position, orientation);
+        _drawPart(character.rightArm, shader, character.position, orientation, RIGHT_ARM_RAISED_ANGLE);
+        _drawPart(character.leftLeg, shader, character.position, orientation, character.leftLegAngle);
+        _drawPart(character.rightLeg, shader, character.position, orientation, character.rightLegAngle);
         _drawPart(character.flashlight, shader, character.position, orientation);
     }
 
@@ -164,5 +188,24 @@ void drawCharacter(Character &character, Shader shader, const Camera &camera)
 
         _drawViewModel(character.rightArm, shader, camera);
         _drawViewModel(character.flashlight, shader, camera);
+    }
+}
+
+void updateCharacter(Character &character, float deltaTime)
+{
+    // Si se está moviendo
+    if (character.isMoving)
+    {
+        // Actualizar los ángulos de las piernas
+        // Uno debe ser positivo y otro negativo
+        character.walkTimer += deltaTime * LEG_SWING_SPEED;
+        character.leftLegAngle = LEG_SWING_AMPLITUDE * std::sin(character.walkTimer);
+        character.rightLegAngle = -LEG_SWING_AMPLITUDE * std::sin(character.walkTimer);
+    }
+    else
+    {
+        // Volver suevamente a 0 cuando para
+        character.leftLegAngle *= 0.85;
+        character.leftLegAngle *= 0.85;
     }
 }

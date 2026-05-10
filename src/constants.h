@@ -39,6 +39,7 @@ const float CAM_HEIGHT_OFFSET_THIRD_PERSON = 1.0f;
 // ========================
 // ESCENARIO
 // ========================
+const float TILE_SIZE = 2.0f;
 const float HALL_WIDTH = 12.0f;
 const float HALL_HEIGHT = 5.0f;
 const float HALL_LENGTH = 100.0f;
@@ -49,10 +50,11 @@ const int BOX_COUNT = 6;
 // =========================
 // LUZ
 // =========================
-const float FLASHLIGHT_ON_AMBIENT = 0.03f;        // valor correcto: 0.04
-const float FLASHLIGHT_ON_DIFFUSE = 1.1f;         // antes 0.2
-const float FLASHLIGHT_ON_SPECULAR = 0.4f;        // antes 0.01
-const float FLASHLIGHT_SPECULAR_STRENGTH = 32.0f; // antes 0.5
+const float FLASHLIGHT_NORMAL_AMBIENT = 0.03f;
+const float FLASHLIGHT_DEBUG_AMBIENT = 0.30f;
+const float FLASHLIGHT_ON_DIFFUSE = 1.1f;
+const float FLASHLIGHT_ON_SPECULAR = 0.4f;
+const float FLASHLIGHT_SPECULAR_STRENGTH = 32.0f;
 
 const float FLASHLIGHT_OFF_AMBIENT = 0.005f;
 const float FLASHLIGHT_OFF_DIFFUSE = 0.0f;
@@ -74,6 +76,7 @@ const glm::vec3 TORSO_SCALE = glm::vec3(0.75f, 1.00f, 0.40f);
 
 const glm::vec3 LEFT_ARM_POSITION = glm::vec3(-0.5125f, 0.85f, 0.0f);
 const glm::vec3 RIGHT_ARM_POSITION = glm::vec3(0.5125f, 0.85f, 0.0f);
+const float RIGHT_ARM_RAISED_ANGLE = 80.0f;
 const glm::vec3 ARM_SCALE = glm::vec3(0.22f, 1.00f, 0.35f);
 
 const glm::vec3 LEFT_LEG_POSITION = glm::vec3(-0.22f, 0.10f, 0.0f);
@@ -83,7 +86,7 @@ const float LEG_SWING_AMPLITUDE = 25.0f; // grados máximos de oscilación
 const float LEG_SWING_SPEED = 8.0f;      // frecuencia en rad/s
 
 const glm::vec3 TP_FLASHLIGHT_POSITION = glm::vec3(0.55f, -0.15f, -0.35f);
-const glm::vec3 TP_FLASHLIGHT_POSITION_OFFSET = glm::vec3(0.0f, -0.3f, 0.1f);
+const glm::vec3 TP_FLASHLIGHT_POSITION_OFFSET = glm::vec3(0.0f, -0.65f, 0.0f);
 const glm::vec3 FLASHLIGHT_SCALE = glm::vec3(0.10f, 0.10f, 0.45f);
 
 const glm::vec3 FP_RIGHT_ARM_OFFSET = glm::vec3(0.45f, -0.65f, 0.35f);

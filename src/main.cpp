@@ -109,7 +109,7 @@ int main()
     // =========================
     // Definir e inicializar shaders
     Shader phong = createShader("shaders/phong.vert", "shaders/phong.frag");
-    Shader unlit = createShader("shaders/unlit.vert", "shaders/unlit.frag");
+    Shader matte = createShader("shaders/matte.vert", "shaders/matte.frag");
 
     // Definir e inicializar tiempo, cámara y habitación
     TimeData time;
@@ -149,37 +149,48 @@ int main()
         else
             aspectRatio = 1.0f;
 
-        // Procesamos el tiempo
+        // 1. Actualizar estado
+        // Procesar el tiempo
         updateTime(time);
-
+        // Posición antes de procesar el input del frame
+        glm::vec3 posBefore = camera.position;
         // Procesar el input
         processInput(window);
-
-        // Matrices de vista y proyección
-        glm::mat4 view = getViewMatrix(camera);
-        glm::mat4 projection = getProjectionMatrix(camera, aspectRatio);
-
-        // Activar los shaders
-        useShader(phong);
-        shaderSetMat4(phong, "view", view);
-        shaderSetMat4(phong, "projection", projection);
-
+        // Saber si se está moviendo el personaje (ajuste para error)
+        character.isMoving = glm::length(camera.position - posBefore) > 0.001f;
+        // Actualizar personaje
+        updateCharacter(character, time.deltaTime);
         // Actualizar el motor de luz
         updateFlashlight(flashlight, camera.position, camera.front);
-        sendFlashlightToShader(flashlight, phong, camera);
-        shaderSetInt(phong, "diffuseTex", 0);
 
+        // 2. Sincronizar el personaje con la cámara
         // Hacer que el personaje siga a la cámara
         character.position = camera.position;
         // Hacer que el personaje esté pegado al suelo
         character.position.y = CHARACTER_INITIAL_Y;
 
-        // Dibujar la escena
-        drawRoom(room, phong);
-        drawBoxes(boxes, phong);
-        drawCharacter(character, phong, camera);
+        // Matrices de vista y proyección
+        glm::mat4 view = getViewMatrix(camera);
+        glm::mat4 projection = getProjectionMatrix(camera, aspectRatio);
 
-        // Intercambiar buffers y procesar eventos
+        // 3. Render
+        // Shader principal
+        useShader(phong);
+        shaderSetMat4(phong, "view", view);
+        shaderSetMat4(phong, "projection", projection);
+        sendFlashlightToShader(flashlight, phong, camera);
+        shaderSetInt(phong, "diffuseTex", 0);
+        drawRoom(room, phong);
+        drawCharacter(character, phong, camera);
+        // Shader para cajas
+        useShader(matte);
+        shaderSetMat4(matte, "view", view);
+        shaderSetMat4(matte, "projection", projection);
+        sendFlashlightToShader(flashlight, matte, camera);
+        shaderSetInt(matte, "diffuseTex", 0);
+        drawBoxes(boxes, matte);
+
+        // 4. Intercambiar buffers y procesar eventos
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

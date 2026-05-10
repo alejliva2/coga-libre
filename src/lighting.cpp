@@ -12,13 +12,14 @@ void initFlashlight(Flashlight &flashlight)
 {
     flashlight.position = glm::vec3(0.0f, HEIGHT_EYE, 0.0f);
     flashlight.direction = glm::vec3(0.0f, 0.0f, -1.0f);
-    flashlight.ambient = FLASHLIGHT_ON_AMBIENT;
+    flashlight.ambient = FLASHLIGHT_NORMAL_AMBIENT;
     flashlight.diffuse = FLASHLIGHT_ON_DIFFUSE;
     flashlight.specular = FLASHLIGHT_ON_SPECULAR;
     flashlight.specularStrength = FLASHLIGHT_SPECULAR_STRENGTH;
     flashlight.innerAngle = FLASHLIGHT_INNER_ANGLE;
     flashlight.outerAngle = FLASHLIGHT_OUTER_ANGLE;
     flashlight.isOn = true;
+    flashlight.debugLight = false;
 }
 
 // ACTUALIZAR POSICIÓN Y DIRECCIÓN DE LA LINTERNA
@@ -32,6 +33,17 @@ void updateFlashlight(Flashlight &flashlight, const glm::vec3 &position, const g
 void toggleFlashlight(Flashlight &flashlight)
 {
     flashlight.isOn = !flashlight.isOn;
+}
+
+// ENCENDER/APAGAR LUCES GENERALES
+void toggleDebugLight(Flashlight &flashlight)
+{
+    flashlight.debugLight = !flashlight.debugLight;
+
+    if (flashlight.debugLight)
+        flashlight.ambient = FLASHLIGHT_DEBUG_AMBIENT;
+    else
+        flashlight.ambient = FLASHLIGHT_NORMAL_AMBIENT;
 }
 
 // ENVIAR PARÁMETROS DE LA LINTERNA AL SHADER
