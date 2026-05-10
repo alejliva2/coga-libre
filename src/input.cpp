@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <glad.h>
 #include <GLFW/glfw3.h>
 
@@ -80,9 +82,15 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         }
         break;
     // Encender/Apagar la linterna
-    case GLFW_KEY_L:
+    case GLFW_KEY_F:
         if (g_flashlight)
             toggleFlashlight(*g_flashlight);
+        break;
+    // Encender/Apagar luces generales
+    case GLFW_KEY_L:
+        if (g_flashlight)
+            toggleDebugLight(*g_flashlight);
+        break;
     }
 }
 
@@ -135,6 +143,12 @@ void processInput(GLFWwindow *window)
         g_camera->position -= flatRight * distance;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         g_camera->position += flatRight * distance;
+
+    // COLISIONES: resulta ser sencillo
+    float halfW = HALL_WIDTH / 2.0f - COLLISION_MARGIN;
+    float halfL = HALL_LENGTH / 2.0f - COLLISION_MARGIN;
+    g_camera->position.x = glm::clamp(g_camera->position.x, -halfW, halfW);
+    g_camera->position.z = glm::clamp(g_camera->position.z, -halfL, halfL);
 
     // Fijar la altura del ojo para el movimiento horizontal
     g_camera->position.y = HEIGHT_EYE;

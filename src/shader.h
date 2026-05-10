@@ -16,6 +16,7 @@ Shader createShader(const char* vertPath, const char* fragPath);
 void useShader(Shader shader);
 void shaderSetInt(Shader shader, const char* name, int value);
 void shaderSetFloat(Shader shader, const char* name, float value);
+void shaderSetVec2(Shader shader, const char* name, glm::vec2 value);
 void shaderSetVec3(Shader shader, const char* name, glm::vec3 value);
 void shaderSetMat4(Shader shader, const char* name, glm::mat4 value);
 

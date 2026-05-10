@@ -108,6 +108,12 @@ void shaderSetFloat(Shader shader, const char *name, float value)
     glUniform1f(glGetUniformLocation(shader.programID, name), value);
 }
 
+// ENVIAR UN VEC2 AL SHADER
+void shaderSetVec2(Shader shader, const char *name, glm::vec2 value)
+{
+    glUniform2fv(glGetUniformLocation(shader.programID, name), 1, glm::value_ptr(value));
+}
+
 // ENVIAR UN VEC3 AL SHADER
 void shaderSetVec3(Shader shader, const char *name, glm::vec3 value)
 {
