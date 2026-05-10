@@ -141,7 +141,6 @@ void initCharacter(Character &character)
 
 void drawCharacter(Character &character, Shader shader, const Camera &camera)
 {
-    glm::vec3 position = character.position;
     // Orientación del personaje (mirando hacia la cámara)
     float orientation = -camera.yaw - 90.0f;
 
